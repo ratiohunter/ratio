@@ -5,6 +5,20 @@ use anchor_lang::solana_program::sysvar::instructions::{
 };
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
+#[cfg(not(feature = "no-entrypoint"))]
+use solana_security_txt::security_txt;
+
+#[cfg(not(feature = "no-entrypoint"))]
+security_txt! {
+    name: "RATIO Emissions",
+    project_url: "https://github.com/ratiohunter/ratio",
+    contacts: "link:https://x.com/ratio_hunter_10,link:https://t.me/ratio_hunter_10",
+    policy: "https://github.com/ratiohunter/ratio/blob/main/SECURITY.md",
+    preferred_languages: "en",
+    source_code: "https://github.com/ratiohunter/ratio",
+    auditors: "N/A"
+}
+
 /// Ed25519 program ID
 pub const ED25519_PROGRAM_ID: Pubkey = pubkey!("Ed25519SigVerify111111111111111111111111111");
 
