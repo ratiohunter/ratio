@@ -23,8 +23,11 @@ The RATIO Emissions Program enables off-chain signed ticket claims for distribut
 
 | Field | Value |
 |-------|-------|
-| **Program ID** | *Not yet deployed* |
+| **Program ID** | `AaV9HbmGwZ43vpUY5rnRP3m1WwyWKi2LZtKnqpQ2ZXbF` |
+| **IDL Account** | `GzrtcP6dRCuQrecCcKprWiwzL834FE1en9brnPMsDjKe` |
+| **Upgrade Authority** | `GLuDbrsP5YCbgh5LZD4eKJdaVWGCPTPHJjuSLhBDAkXN` |
 | **Network** | Solana Mainnet |
+| **Explorer** | [View on Explorer](https://orb.helius.dev/address/AaV9HbmGwZ43vpUY5rnRP3m1WwyWKi2LZtKnqpQ2ZXbF) |
 
 ### Program Instructions
 
