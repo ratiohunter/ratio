@@ -17,7 +17,7 @@ The RATIO Emissions Program enables off-chain signed ticket claims for distribut
 | **Program ID** | `AaV9HbmGwZ43vpUY5rnRP3m1WwyWKi2LZtKnqpQ2ZXbF` |
 | **IDL Account** | `GzrtcP6dRCuQrecCcKprWiwzL834FE1en9brnPMsDjKe` |
 | **Network** | Solana Devnet |
-| **Explorer** | [View on Explorer](https://explorer.solana.com/address/AaV9HbmGwZ43vpUY5rnRP3m1WwyWKi2LZtKnqpQ2ZXbF?cluster=devnet) |
+| **Explorer** | [View on Explorer](https://orb.helius.dev/address/AaV9HbmGwZ43vpUY5rnRP3m1WwyWKi2LZtKnqpQ2ZXbF?cluster=devnet) |
 
 #### Mainnet
 
@@ -69,7 +69,7 @@ The 800M emission allocation is reserved for long-term community rewards, stakin
 - **Decimals**: 6
 - **Status**: Fixed supply (mint authority disabled)
 - **Metadata**: Available with full token information
-- **Explorer**: [View on Solana Explorer](https://explorer.solana.com/address/EnzqcFzo5Kkxr9cKtyLQcoN6qw8MG3auDJR1sHMJjVmG)
+- **Explorer**: [View on Explorer](https://orb.helius.dev/address/EnzqcFzo5Kkxr9cKtyLQcoN6qw8MG3auDJR1sHMJjVmG)
 
 #### Token 2: `Dzv9iTdxWrq2CmJ94xUEMQZtHgtpDZvMtK91ucy2UFdm`
 
@@ -78,7 +78,7 @@ The 800M emission allocation is reserved for long-term community rewards, stakin
 - **Decimals**: 6
 - **Status**: Fixed supply (mint authority disabled)
 - **Metadata**: Available with full token information
-- **Explorer**: [View on Solana Explorer](https://explorer.solana.com/address/Dzv9iTdxWrq2CmJ94xUEMQZtHgtpDZvMtK91ucy2UFdm)
+- **Explorer**: [View on Explorer](https://orb.helius.dev/address/Dzv9iTdxWrq2CmJ94xUEMQZtHgtpDZvMtK91ucy2UFdm)
 
 ### Devnet Tokens (Testing)
 
@@ -89,7 +89,7 @@ The 800M emission allocation is reserved for long-term community rewards, stakin
 - **Decimals**: 6
 - **Status**: Fixed supply (mint authority disabled)
 - **Metadata**: Not available (disabled mint authority prevented metadata creation)
-- **Explorer**: [View on Solana Explorer](https://explorer.solana.com/address/dkFhRYnirenXzKuSXvjAM8fYGrZPAceRGBqLeM2EmyH?cluster=devnet)
+- **Explorer**: [View on Explorer](https://orb.helius.dev/address/dkFhRYnirenXzKuSXvjAM8fYGrZPAceRGBqLeM2EmyH?cluster=devnet)
 
 #### Token 2: `8WZt7ANLrA641zhUuFVraMeFyGXF7RpoqJNRUdZ91pcL`
 
@@ -99,7 +99,7 @@ The 800M emission allocation is reserved for long-term community rewards, stakin
 - **Status**: Fixed supply (mint authority disabled)
 - **Metadata**: Available with basic token information
 - **Metadata PDA**: `FrQvwfUSXdJv49Je7sPNv1Pay5mKsVEteg9tE78Jokmd`
-- **Explorer**: [View on Solana Explorer](https://explorer.solana.com/address/8WZt7ANLrA641zhUuFVraMeFyGXF7RpoqJNRUdZ91pcL?cluster=devnet)
+- **Explorer**: [View on Explorer](https://orb.helius.dev/address/8WZt7ANLrA641zhUuFVraMeFyGXF7RpoqJNRUdZ91pcL?cluster=devnet)
 
 ## Development Setup
 
@@ -113,7 +113,7 @@ The 800M emission allocation is reserved for long-term community rewards, stakin
 ### Build
 
 ```bash
-cd emission
+cd emissions
 anchor build
 ```
 
