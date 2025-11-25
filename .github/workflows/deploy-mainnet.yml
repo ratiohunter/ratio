@@ -1,0 +1,186 @@
+name: Deploy to Mainnet
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_deployment:
+        description: 'Type "DEPLOY" to confirm mainnet deployment'
+        required: true
+        type: string
+      program_id:
+        description: 'Expected Program ID (for verification)'
+        required: false
+        type: string
+
+env:
+  SOLANA_VERSION: 'v3.0.11'
+  ANCHOR_VERSION: '0.32.1'
+  RUST_TOOLCHAIN: '1.84.1'
+
+jobs:
+  validate:
+    name: Validate Deployment Request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check confirmation
+        if: ${{ github.event.inputs.confirm_deployment != 'DEPLOY' }}
+        run: |
+          echo "❌ Deployment not confirmed. You must type 'DEPLOY' to proceed."
+          exit 1
+
+      - name: Confirm deployment intent
+        run: |
+          echo "✅ Mainnet deployment confirmed"
+          echo "Initiated by: ${{ github.actor }}"
+          echo "Commit: ${{ github.sha }}"
+
+  build-and-test:
+    name: Build and Test
+    needs: validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./emissions
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ./emissions/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/${{ env.SOLANA_VERSION }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor CLI
+        run: |
+          cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+          avm install ${{ env.ANCHOR_VERSION }}
+          avm use ${{ env.ANCHOR_VERSION }}
+
+      - name: Verify installations
+        run: |
+          solana --version
+          anchor --version
+          rustc --version
+
+      - name: Build program
+        run: anchor build
+
+      - name: Run tests
+        run: anchor test
+
+      - name: Verify program ID
+        if: ${{ github.event.inputs.program_id != '' }}
+        run: |
+          BUILT_PROGRAM_ID=$(solana address -k target/deploy/ratio_emissions-keypair.json)
+          EXPECTED_PROGRAM_ID="${{ github.event.inputs.program_id }}"
+          if [ "$BUILT_PROGRAM_ID" != "$EXPECTED_PROGRAM_ID" ]; then
+            echo "❌ Program ID mismatch!"
+            echo "Built: $BUILT_PROGRAM_ID"
+            echo "Expected: $EXPECTED_PROGRAM_ID"
+            exit 1
+          fi
+          echo "✅ Program ID verified: $BUILT_PROGRAM_ID"
+
+  deploy-mainnet:
+    name: Deploy to Mainnet
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: mainnet
+    defaults:
+      run:
+        working-directory: ./emissions
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ./emissions/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/${{ env.SOLANA_VERSION }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor CLI
+        run: |
+          cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+          avm install ${{ env.ANCHOR_VERSION }}
+          avm use ${{ env.ANCHOR_VERSION }}
+
+      - name: Setup deployer keypair
+        run: |
+          echo "${{ secrets.MAINNET_DEPLOYER_KEYPAIR }}" > deployer-keypair.json
+          solana config set --keypair ./deployer-keypair.json
+          solana config set --url mainnet-beta
+
+      - name: Check deployer balance
+        run: |
+          echo "Deployer address: $(solana address)"
+          BALANCE=$(solana balance | awk '{print $1}')
+          echo "Balance: $BALANCE SOL"
+          # Require at least 3 SOL for deployment
+          if (( $(echo "$BALANCE < 3" | bc -l) )); then
+            echo "❌ Insufficient balance for deployment. Need at least 3 SOL."
+            exit 1
+          fi
+
+      - name: Build program
+        run: anchor build
+
+      - name: Deploy to Mainnet
+        run: |
+          echo "🚀 Deploying to Mainnet..."
+          anchor deploy --provider.cluster mainnet
+          echo "✅ Deployed to Mainnet successfully!"
+
+      - name: Display deployment info
+        run: |
+          PROGRAM_ID=$(solana address -k target/deploy/ratio_emissions-keypair.json)
+          echo "========================================"
+          echo "🎉 MAINNET DEPLOYMENT SUCCESSFUL"
+          echo "========================================"
+          echo "Program ID: $PROGRAM_ID"
+          echo "Explorer: https://explorer.solana.com/address/$PROGRAM_ID"
+          echo "Deployed by: ${{ github.actor }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "========================================"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f deployer-keypair.json
